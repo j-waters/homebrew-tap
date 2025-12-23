@@ -8,13 +8,13 @@ class TransparentSops < Formula
     depends_on "sops"
   
     def install
-      bin.install "sops-crypt"
+      bin.install "transparent-sops"
       libexec.install "filters"
     end
   
     test do
       # Verify the script runs and shows usage
-      assert_match "Usage:", shell_output("#{bin}/sops-crypt", 1)
+      assert_match "Usage:", shell_output("#{bin}/transparent-sops", 1)
     end
   end
   
