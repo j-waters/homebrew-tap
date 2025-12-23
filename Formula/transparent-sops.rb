@@ -1,8 +1,8 @@
 class TransparentSops < Formula
   desc "Transparent git encryption tool using SOPS"
   homepage "https://github.com/j-waters/transparent-sops"
-  url "https://github.com/j-waters/transparent-sops/archive/refs/tags/v0.1.5.tar.gz"
-  sha256 "d8b495e32aa55cc37aec4182f0fa07c9b5a160d5f4c36688c183a7fac856c055"
+  url "https://github.com/j-waters/transparent-sops/archive/refs/tags/v0.1.6.tar.gz"
+  sha256 "aa9c6f714259aece9ad4d73b26965e54ba19f3624d8ec587af766d5f973d1f38"
   license "MIT"
 
   depends_on "sops"
