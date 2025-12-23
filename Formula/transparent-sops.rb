@@ -9,7 +9,6 @@ class TransparentSops < Formula
 
   def install
     bin.install "transparent-sops"
-    libexec.install "filters"
   end
 
   test do
