@@ -20,8 +20,8 @@ jobs:
       - name: Get formulae and casks
         id: packages
         run: |
-          formulae=$(find Formula -maxdepth 1 -name '*.rb' -print0 2>/dev/null | xargs -0 -I{} basename {} .rb | tr '\n' ' ' | xargs)
-          casks=$(find Casks -maxdepth 1 -name '*.rb' -print0 2>/dev/null | xargs -0 -I{} basename {} .rb | tr '\n' ' ' | xargs)
+          formulae=$(find Formula -maxdepth 1 -name '*.rb' | sed 's|.*/||; s|\.rb$||' | tr '\n' ' ' | xargs)
+          casks=$(find Casks -maxdepth 1 -name '*.rb' | sed 's|.*/||; s|\.rb$||' | tr '\n' ' ' | xargs)
           echo "formulae=$formulae" >> "$GITHUB_OUTPUT"
           echo "casks=$casks" >> "$GITHUB_OUTPUT"
 
