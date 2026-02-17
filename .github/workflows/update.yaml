@@ -19,11 +19,11 @@ jobs:
 
       - name: Get formulae
         id: formulae
-        run: echo "list=$(ls -1 Formula/*.rb 2>/dev/null | xargs -I{} basename {} .rb | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+        run: echo "list=$(find Formula -maxdepth 1 -name '*.rb' -print0 2>/dev/null | xargs -0 -I{} basename {} .rb | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
 
       - name: Get casks
         id: casks
-        run: echo "list=$(ls -1 Casks/*.rb 2>/dev/null | xargs -I{} basename {} .rb | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+        run: echo "list=$(find Casks -maxdepth 1 -name '*.rb' -print0 2>/dev/null | xargs -0 -I{} basename {} .rb | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
 
       - name: Bump packages
         uses: Homebrew/actions/bump-packages@main
