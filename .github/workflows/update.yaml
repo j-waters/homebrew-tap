@@ -19,10 +19,15 @@ jobs:
 
       - name: Get formulae
         id: formulae
-        run: echo "list=$(ls -1 Formula/*.rb | xargs -I{} basename {} .rb | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+        run: echo "list=$(ls -1 Formula/*.rb 2>/dev/null | xargs -I{} basename {} .rb | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+
+      - name: Get casks
+        id: casks
+        run: echo "list=$(ls -1 Casks/*.rb 2>/dev/null | xargs -I{} basename {} .rb | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
 
       - name: Bump packages
         uses: Homebrew/actions/bump-packages@main
         with:
           token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
           formulae: ${{ steps.formulae.outputs.list }}
+          casks: ${{ steps.casks.outputs.list }}
