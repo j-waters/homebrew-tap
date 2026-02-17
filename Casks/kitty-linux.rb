@@ -12,8 +12,8 @@ cask "kitty-linux" do
   desc "GPU-based terminal emulator"
   homepage "https://github.com/kovidgoyal/kitty"
 
-  binary "#{staged_path}/bin/kitty"
-  binary "#{staged_path}/bin/kitten"
+  binary "bin/kitty"
+  binary "bin/kitten"
   artifact "share/applications/kitty.desktop",
            target: "#{Dir.home}/.local/share/applications/kitty.desktop"
   artifact "share/applications/kitty-open.desktop",
