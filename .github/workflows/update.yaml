@@ -20,8 +20,8 @@ jobs:
       - name: Get formulae and casks
         id: packages
         run: |
-          formulae=$(find Formula -maxdepth 1 -name '*.rb' -print0 2>/dev/null | xargs -0 -I{} basename {} .rb | tr '\n' ' ' | xargs)
-          casks=$(find Casks -maxdepth 1 -name '*.rb' -print0 2>/dev/null | xargs -0 -I{} basename {} .rb | tr '\n' ' ' | xargs)
+          formulae=$(ls Formula/*.rb 2>/dev/null | xargs -n1 basename -s .rb)
+          casks=$(ls Casks/*.rb 2>/dev/null | xargs -n1 basename -s .rb)
           echo "formulae=$formulae" >> "$GITHUB_OUTPUT"
           echo "casks=$casks" >> "$GITHUB_OUTPUT"
 
@@ -31,3 +31,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           formulae: ${{ steps.packages.outputs.formulae }}
           casks: ${{ steps.packages.outputs.casks }}
+          fork: false
