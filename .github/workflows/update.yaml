@@ -30,4 +30,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           formulae: ${{ steps.packages.outputs.formulae }}
-          casks: ${{ steps.packages.outputs.casks }}
+          casks: kitty-linux
