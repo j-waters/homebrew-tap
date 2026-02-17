@@ -21,7 +21,5 @@ cask "kitty-linux" do
   artifact "share/icons/hicolor/scalable/apps/kitty.svg",
            target: "#{Dir.home}/.local/share/icons/hicolor/scalable/apps/kitty.svg"
 
-  zap trash: [
-    "~/.config/kitty",
-  ]
+  zap trash: "~/.config/kitty"
 end
