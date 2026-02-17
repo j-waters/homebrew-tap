@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 cask "kitty-linux" do
   arch arm: "arm64", intel: "x86_64"
 
