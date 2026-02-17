@@ -23,22 +23,6 @@ cask "kitty-linux" do
   artifact "share/icons/hicolor/scalable/apps/kitty.svg",
            target: "#{Dir.home}/.local/share/icons/hicolor/scalable/apps/kitty.svg"
 
-  preflight do
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/applications"
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/icons/hicolor/256x256/apps"
-    FileUtils.mkdir_p "#{Dir.home}/.local/share/icons/hicolor/scalable/apps"
-
-    # ["kitty.desktop", "kitty-open.desktop"].each do |desktop_file|
-    #   path = "#{staged_path}/share/applications/#{desktop_file}"
-    #   next unless File.exist?(path)
-
-    #   content = File.read(path)
-    #   content.gsub!("TryExec=kitty", "TryExec=#{HOMEBREW_PREFIX}/bin/kitty")
-    #   content.gsub!("Exec=kitty", "Exec=#{HOMEBREW_PREFIX}/bin/kitty")
-    #   File.write(path, content)
-    # end
-  end
-
   zap trash: [
     "~/.config/kitty",
   ]
