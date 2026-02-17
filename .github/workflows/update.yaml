@@ -20,20 +20,27 @@ jobs:
       - name: Get formulae and casks
         id: packages
         run: |
-          repo="${{ github.repository }}"
-          owner="${repo%%/*}"
-          tap_name="${repo##*/}"
-          tap_name="${tap_name#homebrew-}"
-          tap="${owner}/${tap_name}"
-
-          formulae=$(find Formula -maxdepth 1 -name '*.rb' | sed 's|.*/||; s|\.rb$||' | sed "s|^|${tap}/|" | tr '\n' ' ' | xargs)
-          casks=$(find Casks -maxdepth 1 -name '*.rb' | sed 's|.*/||; s|\.rb$||' | sed "s|^|${tap}/|" | tr '\n' ' ' | xargs)
+          formulae=$(find Formula -maxdepth 1 -name '*.rb' | sed 's|.*/||; s|\.rb$||' | tr '\n' ' ' | xargs)
+          casks=$(find Casks -maxdepth 1 -name '*.rb' | sed 's|.*/||; s|\.rb$||' | tr '\n' ' ' | xargs)
           echo "formulae=$formulae" >> "$GITHUB_OUTPUT"
           echo "casks=$casks" >> "$GITHUB_OUTPUT"
 
-      - name: Bump packages
+      - name: Bump formulae
+        if: steps.packages.outputs.formulae != ''
         uses: Homebrew/actions/bump-packages@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           formulae: ${{ steps.packages.outputs.formulae }}
-          casks: ${{ steps.packages.outputs.casks }}
+
+      - name: Bump casks
+        if: steps.packages.outputs.casks != ''
+        run: |
+          IFS=" " read -r -a casks <<<"$INPUT_CASKS"
+          for cask in "${casks[@]}"; do
+            echo "==> Checking $cask for updates..."
+            brew bump-cask-pr --no-browse --no-audit --no-fork "$cask" 2>&1 || echo "::warning::Failed to bump $cask"
+          done
+        env:
+          INPUT_CASKS: ${{ steps.packages.outputs.casks }}
+          HOMEBREW_DEVELOPER: "1"
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
