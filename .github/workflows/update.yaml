@@ -28,6 +28,6 @@ jobs:
       - name: Bump packages
         uses: Homebrew/actions/bump-packages@main
         with:
-          token: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           formulae: ${{ steps.formulae.outputs.list }}
           casks: ${{ steps.casks.outputs.list }}
