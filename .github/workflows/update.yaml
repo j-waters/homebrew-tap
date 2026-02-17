@@ -1,4 +1,4 @@
-name: Update formulae
+name: Bump packages
 
 on:
   schedule:
