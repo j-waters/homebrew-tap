@@ -6,11 +6,18 @@
 
 Or `brew tap j-waters/tap` and then `brew install <formula>`.
 
+## How do I install casks?
+
+`brew install --cask j-waters/tap/<cask>`
+
+## Brew bundle
+
 Or, in a `brew bundle` `Brewfile`:
 
 ```ruby
 tap "j-waters/tap"
 brew "<formula>"
+cask "<cask>"
 ```
 
 ## Documentation
