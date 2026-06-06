@@ -8,6 +8,7 @@ class ClaudeUsage < Formula
   version "1.1.0"
   sha256 "1ee3c31268100d63ca137af253ccfaaba1781e4043d3f5d84e74bcf4ec9c5133"
   license "MIT"
+  revision 1
   head "https://github.com/phuryn/claude-usage.git", branch: "main"
 
   # Stdlib-only scripts; no pip deps, so virtualenv is unnecessary.
@@ -15,6 +16,7 @@ class ClaudeUsage < Formula
   depends_on "python@3.13"
 
   def install
+    tap_root = Pathname(__FILE__).dirname.parent
     python = Formula["python@3.13"].opt_bin/"python3.13"
 
     libexec.install %w[cli.py scanner.py dashboard.py]
@@ -24,6 +26,8 @@ class ClaudeUsage < Formula
       exec "#{python}" "#{libexec}/cli.py" "$@"
     EOS
     chmod 0755, bin/"claude-usage"
+
+    fish_completion.install tap_root/"completions/claude-usage.fish"
   end
 
   test do
