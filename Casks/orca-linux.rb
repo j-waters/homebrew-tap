@@ -23,6 +23,45 @@ cask "orca-linux" do
 
   app_image "orca-linux#{arch}.AppImage", target: "Orca.AppImage"
 
+  # Why: app_image only symlinks the AppImage into ~/Applications - unlike
+  # macOS Cask, brew's Linux app_image stanza has no Launch Services
+  # equivalent, so nothing registers a menu entry or icon on its own. Unlike
+  # kitty/warp (real archives Cask auto-unpacks, so their artifact stanzas
+  # just point at files already on disk), an AppImage stays one opaque file -
+  # its icon has to be pulled out via its own --appimage-extract fallback
+  # (no FUSE/root needed) before it can be referenced.
+  postflight do
+    appimage_path = "#{staged_path}/orca-linux#{arch}.AppImage"
+    icon = "usr/share/icons/hicolor/512x512/apps/orca-ide.png"
+    system_command appimage_path, args: ["--appimage-extract", icon], chdir: staged_path
+
+    icon_dir = "#{Dir.home}/.local/share/icons/hicolor/512x512/apps"
+    FileUtils.mkdir_p(icon_dir)
+    FileUtils.cp("#{staged_path}/squashfs-root/#{icon}", "#{icon_dir}/orca.png")
+    FileUtils.rm_rf("#{staged_path}/squashfs-root")
+
+    applications_dir = "#{Dir.home}/.local/share/applications"
+    FileUtils.mkdir_p(applications_dir)
+    File.write("#{applications_dir}/orca.desktop", <<~DESKTOP)
+      [Desktop Entry]
+      Version=1.0
+      Type=Application
+      Name=Orca
+      Comment=IDE for orchestrating AI coding agents across terminals and worktrees
+      Exec="#{Dir.home}/Applications/Orca.AppImage" %U
+      Icon=orca
+      Categories=Development;
+      StartupNotify=true
+      StartupWMClass=orca
+      Keywords=ai;coding;agent;claude;codex;
+    DESKTOP
+  end
+
+  uninstall_postflight do
+    FileUtils.rm("#{Dir.home}/.local/share/applications/orca.desktop", force: true)
+    FileUtils.rm("#{Dir.home}/.local/share/icons/hicolor/512x512/apps/orca.png", force: true)
+  end
+
   # Why: mirrors the upstream cask's zap list. Orca writes worktree/agent
   # state under ~/.orca regardless of platform; ~/.config and ~/.cache are
   # Electron's standard Linux userData/cache dirs (the counterparts to
