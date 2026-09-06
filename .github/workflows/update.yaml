@@ -25,7 +25,10 @@ jobs:
       - name: Get formulae and casks
         id: packages
         run: |
-          formulae=$(find Formula -maxdepth 1 -name '*.rb' -exec basename -s .rb {} + | tr '\n' ' ')
+          # claude-usage is pinned to a commit SHA (upstream doesn't tag
+          # releases), so brew bump errors on it instead of skipping it -
+          # excluded here so that failure doesn't abort the cask bump step.
+          formulae=$(find Formula -maxdepth 1 -name '*.rb' ! -name 'claude-usage.rb' -exec basename -s .rb {} + | tr '\n' ' ')
           casks=$(find Casks -maxdepth 1 -name '*.rb' -exec basename -s .rb {} + | tr '\n' ' ')
           echo "formulae=$formulae" >> "$GITHUB_OUTPUT"
           echo "casks=$casks" >> "$GITHUB_OUTPUT"
