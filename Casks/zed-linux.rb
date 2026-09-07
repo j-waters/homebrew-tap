@@ -5,8 +5,7 @@ cask "zed-linux" do
   sha256 arm64_linux:  "deba67d5fcc042b8ad9f92e803464b4ea0b220880fdc373ba5827fcad4ebd9fc",
          x86_64_linux: "483ee09c885801dd7a0230e3ccf5c463c4dbe4559927f5856fd568e7b1a32e3e"
 
-  url "https://github.com/zed-industries/zed/releases/download/v#{version}/zed-linux-#{arch}.tar.gz",
-      verified: "github.com/zed-industries/zed/"
+  url "https://github.com/zed-industries/zed/releases/download/v#{version}/zed-linux-#{arch}.tar.gz"
   name "Zed"
   desc "Multiplayer code editor"
   homepage "https://zed.dev/"
