@@ -22,33 +22,40 @@ cask "orca-linux" do
   depends_on :linux
 
   app_image "orca-linux#{arch}.AppImage", target: "Orca.AppImage"
+  # Why: a stable, arch-independent launch path. app_image moves the real
+  # AppImage to ~/Applications/Orca.AppImage on every (re)install, so this
+  # symlink survives upgrades even though the versioned Caskroom path behind
+  # it doesn't. install-steps blocks may only contain literal step calls - no
+  # interpolated Ruby - so `{{HOMEBREW_PREFIX}}` (a supported template token)
+  # is the only way to embed an absolute launch path in the .desktop file
+  # below; `#{Dir.home}` isn't available there the way it is here.
+  binary "#{Dir.home}/Applications/Orca.AppImage", target: "orca"
 
-  # Why: app_image only symlinks the AppImage into ~/Applications - unlike
-  # macOS Cask, brew's Linux app_image stanza has no Launch Services
-  # equivalent, so nothing registers a menu entry or icon on its own. Unlike
-  # kitty/warp (real archives Cask auto-unpacks, so their artifact stanzas
-  # just point at files already on disk), an AppImage stays one opaque file -
-  # its icon has to be pulled out via its own --appimage-extract fallback
-  # (no FUSE/root needed) before it can be referenced.
-  postflight do
-    appimage_path = "#{staged_path}/orca-linux#{arch}.AppImage"
-    icon = "usr/share/icons/hicolor/512x512/apps/orca-ide.png"
-    system_command appimage_path, args: ["--appimage-extract", icon], chdir: staged_path
+  # Why: app_image only moves the AppImage into ~/Applications - unlike macOS
+  # Cask, brew's Linux app_image stanza has no Launch Services equivalent, so
+  # nothing registers a menu entry or icon on its own. Unlike kitty/warp (real
+  # archives Cask auto-unpacks, so their artifact stanzas just point at files
+  # already on disk), an AppImage stays one opaque file - its icon has to be
+  # pulled out via its own --appimage-extract fallback (no FUSE/root needed)
+  # before it can be referenced.
+  postflight_steps do
+    run "Applications/Orca.AppImage",
+        base:  :home,
+        args:  ["--appimage-extract", "usr/share/icons/hicolor/512x512/apps/orca-ide.png"],
+        chdir: "."
 
-    icon_dir = "#{Dir.home}/.local/share/icons/hicolor/512x512/apps"
-    FileUtils.mkdir_p(icon_dir)
-    FileUtils.cp("#{staged_path}/squashfs-root/#{icon}", "#{icon_dir}/orca.png")
-    FileUtils.rm_rf("#{staged_path}/squashfs-root")
+    copy "squashfs-root/usr/share/icons/hicolor/512x512/apps/orca-ide.png",
+         ".local/share/icons/hicolor/512x512/apps/orca.png",
+         target_base: :home
+    remove "squashfs-root", recursive: true
 
-    applications_dir = "#{Dir.home}/.local/share/applications"
-    FileUtils.mkdir_p(applications_dir)
-    File.write("#{applications_dir}/orca.desktop", <<~DESKTOP)
+    write_file ".local/share/applications/orca.desktop", <<~DESKTOP, base: :home
       [Desktop Entry]
       Version=1.0
       Type=Application
       Name=Orca
       Comment=IDE for orchestrating AI coding agents across terminals and worktrees
-      Exec="#{Dir.home}/Applications/Orca.AppImage" %U
+      Exec="{{HOMEBREW_PREFIX}}/bin/orca" %U
       Icon=orca
       Categories=Development;
       StartupNotify=true
@@ -57,9 +64,9 @@ cask "orca-linux" do
     DESKTOP
   end
 
-  uninstall_postflight do
-    FileUtils.rm("#{Dir.home}/.local/share/applications/orca.desktop", force: true)
-    FileUtils.rm("#{Dir.home}/.local/share/icons/hicolor/512x512/apps/orca.png", force: true)
+  uninstall_postflight_steps do
+    remove ".local/share/applications/orca.desktop", base: :home
+    remove ".local/share/icons/hicolor/512x512/apps/orca.png", base: :home
   end
 
   # Why: mirrors the upstream cask's zap list. Orca writes worktree/agent

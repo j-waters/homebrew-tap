@@ -17,19 +17,17 @@ cask "rquickshare" do
   shimscript = "#{staged_path}/rquickshare.wrapper.sh"
   binary shimscript, target: "rquickshare"
 
-  preflight do
-    File.write shimscript, <<~SH
+  preflight_steps do
+    write_file "rquickshare.wrapper.sh", <<~SH
       #!/bin/sh
-      exec env WEBKIT_DISABLE_COMPOSITING_MODE=1 '#{staged_path}/r-quick-share-legacy_v#{version}_glibc-2.31_amd64.AppImage' "$@"
+      exec env WEBKIT_DISABLE_COMPOSITING_MODE=1 '{{staged_path}}/r-quick-share-legacy_v{{version}}_glibc-2.31_amd64.AppImage' "$@"
     SH
-    set_permissions [shimscript], "0755"
-    set_permissions ["#{staged_path}/r-quick-share-legacy_v#{version}_glibc-2.31_amd64.AppImage"], "0755"
+    set_permissions "rquickshare.wrapper.sh", "0755"
+    set_permissions "r-quick-share-legacy_v{{version}}_glibc-2.31_amd64.AppImage", "0755"
   end
 
-  postflight do
-    applications_dir = "#{Dir.home}/.local/share/applications"
-    FileUtils.mkdir_p(applications_dir)
-    File.write("#{applications_dir}/rquickshare.desktop", <<~DESKTOP)
+  postflight_steps do
+    write_file ".local/share/applications/rquickshare.desktop", <<~DESKTOP, base: :home
       [Desktop Entry]
       Version=1.0
       Type=Application
@@ -43,8 +41,8 @@ cask "rquickshare" do
     DESKTOP
   end
 
-  uninstall_postflight do
-    FileUtils.rm("#{Dir.home}/.local/share/applications/rquickshare.desktop", force: true)
+  uninstall_postflight_steps do
+    remove ".local/share/applications/rquickshare.desktop", base: :home
   end
 
   zap trash: "~/.local/share/dev.mandre.rquickshare"
