@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 cask "warp-linux" do
   arch arm: "aarch64", intel: "x86_64"
 
@@ -18,6 +20,7 @@ cask "warp-linux" do
   end
 
   auto_updates true
+  depends_on :linux
 
   binary "opt/warpdotdev/warp-terminal/warp", target: "warp-terminal"
   artifact "usr/share/applications/dev.warp.Warp.desktop",

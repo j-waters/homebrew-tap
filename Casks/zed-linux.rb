@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 cask "zed-linux" do
   arch arm: "aarch64", intel: "x86_64"
 
@@ -14,6 +16,8 @@ cask "zed-linux" do
     url :url
     strategy :github_latest
   end
+
+  depends_on :linux
 
   binary "zed.app/bin/zed"
   artifact "zed.app/share/applications/dev.zed.Zed.desktop",

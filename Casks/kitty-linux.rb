@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 cask "kitty-linux" do
   arch arm: "arm64", intel: "x86_64"
 
@@ -9,6 +11,8 @@ cask "kitty-linux" do
   name "kitty"
   desc "GPU-based terminal emulator"
   homepage "https://github.com/kovidgoyal/kitty"
+
+  depends_on :linux
 
   binary "bin/kitty"
   binary "bin/kitten"
