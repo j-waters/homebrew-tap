@@ -15,7 +15,7 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@main
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TAP_BUMP_TOKEN }}
 
       - name: Configure Git user
         run: |
@@ -36,7 +36,24 @@ jobs:
       - name: Bump packages
         uses: Homebrew/actions/bump-packages@main
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TAP_BUMP_TOKEN }}
           formulae: ${{ steps.packages.outputs.formulae }}
           casks: ${{ steps.packages.outputs.casks }}
           fork: false
+
+      # Bump packages authors PRs with TAP_BUMP_TOKEN (not the default
+      # GITHUB_TOKEN), so tests.yml actually triggers on them - GitHub
+      # suppresses pull_request events authored by the default token to
+      # prevent recursive workflow runs. That lets auto-merge below wait
+      # on a real brew test-bot result instead of nothing.
+      - name: Enable auto-merge on bump PRs
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr list --repo "${{ github.repository }}" --state open \
+              --json number,headRefName,autoMergeRequest \
+            | jq -r '.[] | select(.headRefName | startswith("bump-")) | select(.autoMergeRequest == null) | .number' \
+            | while read -r n; do
+                gh pr merge "$n" --repo "${{ github.repository }}" --auto --squash
+              done
