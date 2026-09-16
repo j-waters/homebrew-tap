@@ -1,9 +1,9 @@
 cask "orca-linux" do
   arch arm: "-arm64"
 
-  version "1.4.202"
-  sha256 arm64_linux:  "7d340591b974a68a0ee75c9a60f5c17620ed4202e2fdc012cccfecdd7b3284c2",
-         x86_64_linux: "491da50678bcbb8d1ffe95423681046813eabaa36fad9640e0bb6ed6c2208292"
+  version "1.4.203"
+  sha256 arm64_linux:  "5d6a582caa17a068bcc4c094840bcfb882420b9fc121098f343fb8ea0a93d41c",
+         x86_64_linux: "689c5839710433976709387a6d4528b4671d778458c32b6fbce04ea6e608de89"
 
   url "https://github.com/stablyai/orca/releases/download/v#{version}/orca-linux#{arch}.AppImage"
   name "Orca"
